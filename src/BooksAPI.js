@@ -12,22 +12,33 @@ const headers = {
   'Authorization': token
 }
 
+export const get = (bookId) =>
+  fetch(`${api}/books/${bookId}`, { headers })
+    .then(res => res.json())
+    .then(data => data.book)
+
 export const getAll = () =>
-  fetch(`${api}/contacts`, { headers })
+  fetch(`${api}/books`, { headers })
     .then(res => res.json())
-    .then(data => data.contacts)
+    .then(data => data.books)
 
-export const remove = (contact) =>
-  fetch(`${api}/contacts/${contact.id}`, { method: 'DELETE', headers })
-    .then(res => res.json())
-    .then(data => data.contact)
+export const update = (book, shelf) =>
+  fetch(`${api}/books/${book.id}`, {
+    method: 'PUT',
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ shelf })
+  }).then(res => res.json())
 
-export const create = (body) =>
-  fetch(`${api}/contacts`, {
+export const search = (query) =>
+  fetch(`${api}/search`, {
     method: 'POST',
     headers: {
       ...headers,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({ query })
   }).then(res => res.json())
+    .then(data => data.books)
