@@ -1,51 +1,48 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router-dom'
-import ListContacts from './ListContacts'
-import CreateContact from './CreateContact'
-import * as ContactsAPI from './utils/ContactsAPI'
+import React from 'react';
+import { Route } from 'react-router-dom';
+import * as BooksAPI from './BooksAPI';
+import SearchPage from './SearchPage';
+import MainPage from './MainPage';
+import './App.css'
 
-class App extends Component {
+class BooksApp extends React.Component {
   state = {
-    contacts: []
+    books: []
   }
+
   componentDidMount() {
-    ContactsAPI.getAll().then((contacts) => {
-      this.setState({ contacts })
+    BooksAPI.getAll().then((books) => {
+      this.setState({ books: books })
     })
   }
-  removeContact = (contact) => {
-    this.setState((state) => ({
-      contacts: state.contacts.filter((c) => c.id !== contact.id)
-    }))
 
-    ContactsAPI.remove(contact)
-  }
+  moveShelf = (book, shelf) => {
+    BooksAPI.update(book, shelf);
 
-  createContact(contact) {
-    ContactsAPI.create(contact).then(contact => {
-      this.setState(state => ({
-        contacts: state.contacts.concat([ contact ])
-      }))
+    BooksAPI.getAll().then((books) => {
+      this.setState({ books: books })
     })
   }
 
   render() {
+
     return (
-      <div>
-        <Route exact path='/' render={() => (
-          <ListContacts
-            onDeleteContact={this.removeContact}
-            contacts={this.state.contacts}
+      <div className="app">
+
+        <Route exact path="/" render{() => (
+          <MainPage
+            books={this.state.books}
+            moveShelf={this.moveShelf}
           />
-        )}/>
-        <Route path='/create' render={({ history }) => (
-          <CreateContact
-            onCreateContact={(contact) => {
-              this.createContact(contact)
-              history.push('/')
-            }}
+          )} />
+
+        <Route path="/search" render{() => (
+          <SearchPage
+          moveShelf={this.moveShelf}
           />
-        )}/>
+          )} />
+
+
       </div>
     )
   }
